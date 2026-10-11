@@ -2,6 +2,8 @@
 define('IC_SITE', true);
 require __DIR__ . '/includes/helpers.php';
 
+
+
 $page = array(
     'key'          => 'home',
     'title'        => 'IronCybriq Solutions - Cybersecurity Excellence',
@@ -33,6 +35,7 @@ require __DIR__ . '/includes/header.php';
     <img src="assets/img/hero-1536.webp"
          srcset="assets/img/hero-640.webp 640w, assets/img/hero-1024.webp 1024w, assets/img/hero-1536.webp 1536w"
          sizes="100vw" width="1536" height="1024" alt="" fetchpriority="high" decoding="async">
+         <!-- deployment-test-123 -->
   </div>
 
   <div class="container hero__inner">
