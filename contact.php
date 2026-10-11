@@ -1,119 +1,206 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Contact IronCybriq Solutions for independent cybersecurity consulting, security assessments, and advisory services. Get in touch with our expert team.">
-<link rel="icon" type="image/png" href="ChatGPT_Image_Dec_22__2025__12_03_08_PM-removebg-preview (1) (1).png">
-<title>Contact Us | IronCybriq Solutions</title>
-<head><link rel="icon" type="image/x-icon" href="imgs/F05772A5-E3ED-46B5-BA19-F6DB15933F04-modified.png">
+<?php
+define('IC_SITE', true);
+require __DIR__ . '/includes/helpers.php';
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
+$page = array(
+    'key'         => 'contact',
+    'title'       => 'Contact Us | IronCybriq Solutions',
+    'description' => 'Contact IronCybriq Solutions for independent cybersecurity consulting, security assessments, and advisory services. Get in touch with our expert team.',
+    'canonical'   => 'https://ironcybriq.ma/contact.php',
+);
 
-<nav class="navbar navbar-expand-lg navbar-dark fixed-top custom-nav">
- <div class="container">
-    <a class="navbar-brand" href="index.php">
-        <img src="imgs/ChatGPT_Image_Dec_22__2025__12_03_08_PM-removebg-preview (1) (1).png" alt="IronCybriq logo" class="brand-icon">
-    </a>
-  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
-   <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="nav">
-   <ul class="navbar-nav ms-auto">
-    <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
-    <li class="nav-item"><a class="nav-link" href="services.php">Services</a></li>
-    <li class="nav-item"><a class="nav-link" href="about.php">About</a></li>
-    <li class="nav-item"><a class="nav-link active" href="contact.php">Contact</a></li>
-   </ul>
+$site    = site();
+$contact = $site['contact'];
+
+$serviceOptions = array(
+    'Cybersecurity Advisory',
+    'Governance & Risk Management',
+    'Cloud Security Assessment',
+    'Vendor Selection Support',
+    'Training Retreats',
+    'Security Assessment',
+    'Other',
+);
+
+/* ---------------------------------------------------------------------------
+ * Form handling. Works with JavaScript (fetch, JSON reply) and without it
+ * (normal POST, page re-rendered with the result).
+ * ------------------------------------------------------------------------ */
+
+function ic_field($key, $max, $multiline = false)
+{
+    $value = isset($_POST[$key]) && is_string($_POST[$key]) ? $_POST[$key] : '';
+    $value = str_replace("\r\n", "\n", $value);
+    if (!$multiline) {
+        $value = preg_replace('/[\r\n\t]+/', ' ', $value);
+    }
+    $value = trim($value);
+    return function_exists('mb_substr') ? mb_substr($value, 0, $max, 'UTF-8') : substr($value, 0, $max);
+}
+
+function ic_send($to, $from, array $v)
+{
+    $subject = 'Website contact: ' . $v['service'];
+    $body    = "Name: {$v['name']}\n"
+             . "Email: {$v['email']}\n"
+             . "Company: {$v['company']}\n"
+             . "Phone: {$v['phone']}\n"
+             . "Service interest: {$v['service']}\n\n"
+             . $v['message'] . "\n";
+    $headers = array(
+        'MIME-Version: 1.0',
+        'Content-Type: text/plain; charset=UTF-8',
+        'From: IronCybriq Website <' . $from . '>',
+        'Reply-To: ' . $v['email'],   // already validated, cannot contain line breaks
+    );
+    return @mail($to, '=?UTF-8?B?' . base64_encode($subject) . '?=', $body, implode("\r\n", $headers));
+}
+
+$values = array('name' => '', 'email' => '', 'company' => '', 'phone' => '', 'service' => '', 'message' => '');
+$status = null; // null | 'sent' | 'error'
+
+if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $values = array(
+        'name'    => ic_field('name', 120),
+        'email'   => ic_field('email', 190),
+        'company' => ic_field('company', 160),
+        'phone'   => ic_field('phone', 40),
+        'service' => ic_field('service', 80),
+        'message' => ic_field('message', 5000, true),
+    );
+
+    $isBot = ic_field('website', 200) !== ''; // honeypot field, hidden from people
+    $valid = $values['name'] !== ''
+          && $values['message'] !== ''
+          && filter_var($values['email'], FILTER_VALIDATE_EMAIL) !== false
+          && in_array($values['service'], $serviceOptions, true);
+
+    if ($isBot) {
+        $status = 'sent'; // pretend success, send nothing
+    } elseif (!$valid) {
+        $status = 'error';
+    } else {
+        $status = ic_send($site['mail']['to'], $site['mail']['from'], $values) ? 'sent' : 'error';
+    }
+
+    if ($status === 'sent') {
+        $values = array_fill_keys(array_keys($values), '');
+    }
+
+    $accept = isset($_SERVER['HTTP_ACCEPT']) ? $_SERVER['HTTP_ACCEPT'] : '';
+    if (strpos($accept, 'application/json') !== false) {
+        header('Content-Type: application/json; charset=UTF-8');
+        header('Cache-Control: no-store');
+        echo json_encode(array('ok' => $status === 'sent'));
+        exit;
+    }
+}
+
+require __DIR__ . '/includes/header.php';
+?>
+
+<section class="page-head theme-dark">
+  <div class="container page-head__inner">
+    <h1 class="h1">Contact Us</h1>
+    <p class="page-head__lead">Ready to strengthen your cybersecurity posture? Get in touch with our team to discuss your needs and learn how we can help protect your organization.</p>
   </div>
- </div>
-</nav>
-
-<section class="subpage">
- <div class="container animate-top">
-  <h2 class="mb-4">Contact Us</h2>
-  <p class="mb-5">Ready to strengthen your cybersecurity posture? Get in touch with our team to discuss your needs and learn how we can help protect your organization.</p>
-
-  <div class="row">
-   <!-- Contact Form -->
-   <div class="col-lg-6 mb-4">
-    <div class="contact-form">
-     <h3 class="mb-4">Send Us a Message</h3>
-     <div id="form-message" class="alert alert-success d-none" role="alert">
-      <i class="fas fa-check-circle me-2"></i>Message sent! We will get back to you soon.
-     </div>
-     <form id="contact-form">
-      <div class="row">
-       <div class="col-md-6 mb-3"><input type="text" class="form-control" placeholder="Full Name" required></div>
-       <div class="col-md-6 mb-3"><input type="email" class="form-control" placeholder="Email Address" required></div>
-      </div>
-      <div class="row">
-       <div class="col-md-6 mb-3"><input type="text" class="form-control" placeholder="Company Name"></div>
-       <div class="col-md-6 mb-3"><input type="tel" class="form-control" placeholder="Phone Number"></div>
-      </div>
-      <div class="mb-3">
-       <select class="form-control" required>
-        <option value="">Select Service Interest</option>
-        <option>Cybersecurity Advisory</option>
-        <option>Governance & Risk Management</option>
-        <option>Cloud Security Assessment</option>
-        <option>Vendor Selection Support</option>
-        <option>Training Retreats</option>
-        <option>Security Assessment</option>
-        <option>Other</option>
-       </select>
-      </div>
-      <div class="mb-3"><textarea class="form-control" placeholder="Tell us about your cybersecurity needs..." rows="6" required></textarea></div>
-      <button type="submit" class="btn btn-primary px-5"><i class="fas fa-paper-plane me-2"></i>Send Message</button>
-     </form>
-    </div>
-   </div>
-
-   <!-- Sidebar with Emails, Phone, Office, Response Time -->
-   <div class="col-lg-6 mb-4">
-    <div class="service-card h-100">
-     <h3 class="mb-4">Get In Touch</h3>
-     
-     <div class="mb-4">
-      <h5><i class="fas fa-envelope text-primary me-2"></i>Email</h5>
-      <p class="mb-0">mostafa.essemmar@ironcybriq.ma</p>
-      <p>contact@ironcybriq.ma</p>
-     </div>
-
-     <div class="mb-4">
-      <h5><i class="fas fa-phone text-primary me-2"></i>Phone</h5>
-      <p class="mb-0">+212 667 980 006</p>
-      <p><small>Available Monday - Friday, 9 AM - 6 PM EST</small></p>
-     </div>
-
-     <div class="mb-4">
-      <h5><i class="fas fa-map-marker-alt text-primary me-2"></i>Office</h5>
-      <p class="mb-0">Meknès, Morocco</p>
-     </div>
-
-     <div class="mb-4">
-      <h5><i class="fas fa-clock text-primary me-2"></i>Response Time</h5>
-      <p class="mb-0">We typically respond within 24 hours during business days.</p>
-     </div>
-    </div>
-   </div>
-
-  </div>
- </div>
 </section>
 
-<footer class="text-center text-light py-4 custom-footer">
- <div class="container">
-  <p class="mb-2">© 2025 IronCybriq Solutions. All rights reserved.</p>
-  <p class="mb-0"><small>Independent Cybersecurity Consulting & Training</small></p>
- </div>
-</footer>
+<section class="section theme-paper" aria-label="Contact">
+  <div class="container contact">
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="assets/js/main.js"></script>
-</body>
-</html>
+    <div class="card contact__form" data-reveal>
+      <h2 class="h3" id="message">Send Us a Message</h2>
+
+      <div class="alert alert--success" id="form-success" role="status"<?= $status === 'sent' ? '' : ' hidden' ?>>
+        <?= icon('circle-check') ?>
+        <p>Message sent! We will get back to you soon.</p>
+      </div>
+      <div class="alert alert--error" id="form-error" role="alert"<?= $status === 'error' ? '' : ' hidden' ?>>
+        <?= icon('circle-alert') ?>
+        <p>Something went wrong. Please check your details and try again, or email us directly.</p>
+      </div>
+
+      <form class="form" id="contact-form" method="post" action="contact.php#message">
+        <div class="form__grid">
+          <div class="field">
+            <label for="f-name">Full Name <span class="req" aria-hidden="true">*</span></label>
+            <input class="input" id="f-name" name="name" type="text" autocomplete="name" maxlength="120" required value="<?= e($values['name']) ?>">
+          </div>
+          <div class="field">
+            <label for="f-email">Email Address <span class="req" aria-hidden="true">*</span></label>
+            <input class="input" id="f-email" name="email" type="email" autocomplete="email" maxlength="190" required value="<?= e($values['email']) ?>">
+          </div>
+          <div class="field">
+            <label for="f-company">Company Name</label>
+            <input class="input" id="f-company" name="company" type="text" autocomplete="organization" maxlength="160" value="<?= e($values['company']) ?>">
+          </div>
+          <div class="field">
+            <label for="f-phone">Phone Number</label>
+            <input class="input" id="f-phone" name="phone" type="tel" autocomplete="tel" maxlength="40" value="<?= e($values['phone']) ?>">
+          </div>
+          <div class="field field--wide">
+            <label for="f-service">Service Interest <span class="req" aria-hidden="true">*</span></label>
+            <select class="input select" id="f-service" name="service" required>
+              <option value="">Select Service Interest</option>
+<?php foreach ($serviceOptions as $option): ?>
+              <option<?= $values['service'] === $option ? ' selected' : '' ?>><?= e($option) ?></option>
+<?php endforeach; ?>
+            </select>
+          </div>
+          <div class="field field--wide">
+            <label for="f-message">Tell us about your cybersecurity needs <span class="req" aria-hidden="true">*</span></label>
+            <textarea class="input textarea" id="f-message" name="message" rows="6" maxlength="5000" required><?= e($values['message']) ?></textarea>
+          </div>
+        </div>
+
+        <div class="hp" aria-hidden="true">
+          <label for="f-website">Website</label>
+          <input id="f-website" name="website" type="text" tabindex="-1" autocomplete="off">
+        </div>
+
+        <button class="btn btn--primary btn--lg form__submit" type="submit"><?= icon('send') ?> Send Message</button>
+      </form>
+    </div>
+
+    <section class="panel contact__info theme-dark" aria-labelledby="info-title" data-reveal>
+      <h2 class="h3" id="info-title">Get In Touch</h2>
+      <ul class="info">
+        <li class="info__item">
+          <span class="chip"><?= icon('mail') ?></span>
+          <h3 class="label">Email</h3>
+          <div class="info__values">
+<?php foreach ($contact['emails'] as $address): ?>
+            <p><a href="mailto:<?= e($address) ?>"><?= e($address) ?></a></p>
+<?php endforeach; ?>
+          </div>
+        </li>
+        <li class="info__item">
+          <span class="chip"><?= icon('phone') ?></span>
+          <h3 class="label">Phone</h3>
+          <div class="info__values">
+            <p><a href="tel:<?= e($contact['phone']['tel']) ?>"><?= e($contact['phone']['display']) ?></a></p>
+            <p class="info__note"><?= e($contact['hours']) ?></p>
+          </div>
+        </li>
+        <li class="info__item">
+          <span class="chip"><?= icon('map-pin') ?></span>
+          <h3 class="label">Office</h3>
+          <div class="info__values">
+            <p><?= e($contact['office']) ?></p>
+          </div>
+        </li>
+        <li class="info__item">
+          <span class="chip"><?= icon('clock') ?></span>
+          <h3 class="label">Response Time</h3>
+          <div class="info__values">
+            <p><?= e($contact['response']) ?></p>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+  </div>
+</section>
+
+<?php require __DIR__ . '/includes/footer.php'; ?>
