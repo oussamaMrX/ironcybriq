@@ -2,12 +2,12 @@
 deployment:
   tasks:
     - export DEPLOYPATH=/home2/ironcybr/public_html/
-    - /bin/cp index.php $DEPLOYPATH
-    - /bin/cp about.php $DEPLOYPATH
-    - /bin/cp contact.php $DEPLOYPATH
-    - /bin/cp services.php $DEPLOYPATH
-    - /bin/cp style.css $DEPLOYPATH
-    - /bin/cp sitemap.xml $DEPLOYPATH
+    - /bin/cp -f index.php $DEPLOYPATH
+    - /bin/cp -f about.php $DEPLOYPATH
+    - /bin/cp -f contact.php $DEPLOYPATH
+    - /bin/cp -f services.php $DEPLOYPATH
+    - /bin/cp -f style.css $DEPLOYPATH
+    - /bin/cp -f sitemap.xml $DEPLOYPATH
     - /bin/cp -R imgs $DEPLOYPATH
     - /bin/cp -R assets $DEPLOYPATH
     - /bin/cp -R includes $DEPLOYPATH
