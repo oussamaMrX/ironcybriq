@@ -9,6 +9,7 @@ $email   = $site['mail']['to'];
 </main>
 
 <footer class="site-footer theme-dark">
+  <!-- deployment-test-123 -->
   <div class="container">
     <div class="site-footer__grid">
       <div class="site-footer__brand">
