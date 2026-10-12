@@ -6,7 +6,6 @@ deployment:
     - /bin/cp -f about.php $DEPLOYPATH
     - /bin/cp -f contact.php $DEPLOYPATH
     - /bin/cp -f services.php $DEPLOYPATH
-    - /bin/cp -f style.css $DEPLOYPATH
     - /bin/cp -f sitemap.xml $DEPLOYPATH
     - /bin/cp -R imgs/. $DEPLOYPATH/imgs/
     - /bin/cp -R assets/. $DEPLOYPATH/assets/
