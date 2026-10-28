@@ -176,6 +176,14 @@ require __DIR__ . '/includes/header.php';
           </div>
         </li>
         <li class="info__item">
+          <span class="chip"><?= icon('mail') ?></span>
+          <h3 class="label"><?= e($contact['development']['label']) ?></h3>
+          <div class="info__values">
+            <p><a href="mailto:<?= e($contact['development']['email']) ?>"><?= e($contact['development']['email']) ?></a></p>
+            <p class="info__note"><?= e($contact['development']['note']) ?></p>
+          </div>
+        </li>
+        <li class="info__item">
           <span class="chip"><?= icon('phone') ?></span>
           <h3 class="label">Phone</h3>
           <div class="info__values">

@@ -29,6 +29,9 @@ $services = array(
     array('assessments', 'search', 'Security Assessments & Audits',
         'Thorough evaluation of your security controls, processes, and infrastructure to identify vulnerabilities and provide actionable recommendations for improvement.',
         array('Security posture assessment', 'Penetration testing', 'Vulnerability scanning', 'Security audit and review', 'Remediation planning')),
+    array('development', 'settings', 'Software Development, Cloud & DevOps',
+        'We develop modern web applications and business solutions, supported by reliable cloud deployment and streamlined delivery workflows. Our services cover web development, backend systems, API integrations, cloud configuration, and CI/CD automation, with a focus on maintainability, reliability, and security-conscious development.',
+        array('Web development: Laravel, PHP, React', 'Backend development and API integration', 'Database development: MySQL', 'Cloud services: Microsoft Azure', 'CI/CD and deployment automation using appropriate tools such as GitHub Actions')),
 );
 
 require __DIR__ . '/includes/header.php';

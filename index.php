@@ -25,6 +25,7 @@ $services = array(
     array('cloud', 'Cloud Security', 'Expert assessment and implementation of cloud security best practices to protect your data and applications in the cloud.', 'cloud'),
     array('handshake', 'Vendor Selection', 'Independent RFP support and vendor evaluation to help you choose secure, reliable technology partners that meet your security standards.', 'vendor'),
     array('book-open', 'Governance & Compliance', 'Develop robust cybersecurity governance frameworks and ensure compliance with industry regulations and standards.', 'governance'),
+    array('settings', 'Software Development, Cloud & DevOps', 'Modern web applications and business solutions, supported by cloud deployment and streamlined delivery workflows.', 'development'),
 );
 
 require __DIR__ . '/includes/header.php';

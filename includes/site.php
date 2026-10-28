@@ -21,6 +21,11 @@ return array(
 
     'contact' => array(
         'emails'   => array('mostafa.essemmar@ironcybriq.ma', 'contact@ironcybriq.ma'),
+        'development' => array(
+            'email' => 'oussama.essemmar@ironcybriq.ma',
+            'label' => 'Software Development & Cloud',
+            'note'  => 'For software development and cloud-related inquiries',
+        ),
         // Non-breaking spaces keep the number on one line at any width
         'phone'    => array('display' => "+212\u{00A0}667\u{00A0}980\u{00A0}006", 'tel' => '+212667980006'),
         'hours'    => 'Available Monday - Friday, 9 AM - 6 PM EST',
